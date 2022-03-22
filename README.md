@@ -19,7 +19,8 @@ $ git clone https://github.com/PaulRoss1/PME-Backend.git
 $ cd PME-Backend
 
 # Generate a Secret Key
-[generate](https://miniwebtool.com/django-secret-key-generator/) a secret key and place it in settings.py
+generate a key https://miniwebtool.com/django-secret-key-generator/ 
+and place it in settings.py
 
 # Create and activate virtual environment
 $ virtualenv env
