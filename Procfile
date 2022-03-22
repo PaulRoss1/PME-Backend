@@ -1,0 +1,1 @@
+web: gunicorn prague_music_events.wsgi
