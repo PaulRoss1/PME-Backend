@@ -56,49 +56,26 @@ class EventsList(APIView):
             this_week.append(str((monday + timedelta(days=i)).strftime("%d. %m. %Y")))
         this_weekend =  this_week[5:7]
 
+        dates_dict = {
+            'today': today,
+            'tomorrow': tomorrow,
+            'whole-period': ""
+        }
 
-
-        if time_frame == 'whole-period':
-            if category == 'live-music':
-                events = Event.objects.filter(event_type='Live Music')
-            if category == 'djs':
-                events = Event.objects.filter(event_type="DJ's")
-            if category == 'all-events':
-                events = Event.objects.all()
-
-        if time_frame == 'today':
-            if category == 'live-music':
-                events = Event.objects.filter(event_type='Live Music').filter(date__contains=today)
-            if category == 'djs':
-                events = Event.objects.filter(event_type="DJ's").filter(date__contains=today)
-            if category == 'all-events':
-                events = Event.objects.filter(date__contains=today)
-
-        if time_frame == 'tomorrow':
-            if category == 'live-music':
-                events = Event.objects.filter(event_type='Live Music').filter(date__contains=tomorrow)
-            if category == 'djs':
-                events = Event.objects.filter(event_type="DJ's").filter(date__contains=tomorrow)
-            if category == 'all-events':
-                events = Event.objects.filter(date__contains=tomorrow)
-
+        category_dict = {
+            "djs": "DJ's",
+            "live-music": "Live Music",
+            "all-events": ""
+        }
 
         if time_frame == 'this-week':
-            if category == 'live-music':
-                events = Event.objects.filter(event_type='Live Music').filter(Q(date__contains=this_week[0]) | Q(date__contains=this_week[1]) | Q(date__contains=this_week[2]) | Q(date__contains=this_week[3]) | Q(date__contains=this_week[4]) | Q(date__contains=this_week[5]) | Q(date__contains=this_week[6]))
-            if category == 'djs':
-                events = Event.objects.filter(event_type="DJ's").filter(Q(date__contains=this_week[0]) | Q(date__contains=this_week[1]) | Q(date__contains=this_week[2]) | Q(date__contains=this_week[3]) | Q(date__contains=this_week[4]) | Q(date__contains=this_week[5]) | Q(date__contains=this_week[6]))
-            if category == 'all-events':
-                events = Event.objects.filter(Q(date__contains=this_week[0]) | Q(date__contains=this_week[1]) | Q(date__contains=this_week[2]) | Q(date__contains=this_week[3]) | Q(date__contains=this_week[4]) | Q(date__contains=this_week[5]) | Q(date__contains=this_week[6]))
+            events = Event.objects.filter(event_type__contains=category_dict[category]).filter(Q(date__contains=this_week[0]) | Q(date__contains=this_week[1]) | Q(date__contains=this_week[2]) | Q(date__contains=this_week[3]) | Q(date__contains=this_week[4]) | Q(date__contains=this_week[5]) | Q(date__contains=this_week[6]))
 
+        elif time_frame == 'this-weekend':
+            events = Event.objects.filter(event_type__contains=category_dict[category]).filter(Q(date__contains=this_weekend[0]) | Q(date__contains=this_weekend[1]))
 
-        if time_frame == 'this-weekend':
-            if category == 'live-music':
-                events = Event.objects.filter(event_type='Live Music').filter(Q(date__contains=this_weekend[0]) | Q(date__contains=this_weekend[1]))
-            if category == 'djs':
-                events = Event.objects.filter(event_type="DJ's").filter(Q(date__contains=this_weekend[0]) | Q(date__contains=this_weekend[1]))
-            if category == 'all-events':
-                events = Event.objects.filter(Q(date__contains=this_weekend[0]) | Q(date__contains=this_weekend[1]))
+        else:
+            events = Event.objects.filter(event_type__contains=category_dict[category]).filter(date__contains=dates_dict[f'{time_frame}'])
 
         page = self.paginate_queryset(events)
         if page is not None:
